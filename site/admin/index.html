@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Administración</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body class="offcanvas-nav">
+  <div class="topbar">
+    <div class="container">
+      <div class="topbar-actions">
+        <button class="icon-btn search-btn" type="button" aria-label="Buscar">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="10.5" cy="10.5" r="6.5"></circle>
+            <line x1="15.5" y1="15.5" x2="21" y2="21"></line>
+          </svg>
+        </button>
+        <button class="icon-btn burger-btn" id="burgerToggle" type="button" aria-label="Abrir menú lateral">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+      <div class="topbar-rail">
+        <a class="brand brand-link" href="/">
+          <div class="brand-badge has-logo">
+            <span class="brand-fallback" aria-hidden="true">pd</span>
+            <img id="logo" alt="Logo" src="/imgs/logoperened.png" />
+          </div>
+          <div class="brand-caption">
+            <span id="siteName">perened</span>
+          </div>
+        </a>
+        <nav class="nav">
+          <a href="/">Inicio</a>
+          <div class="nav-item">
+            <a href="/publicaciones/">Publicaciones</a>
+            <div class="subnav">
+              <a href="/publicaciones/?categoria=Noticias%20e%20Informes">Noticias e Informes</a>
+              <a href="/publicaciones/?categoria=Art%C3%ADculos">Artículos</a>
+              <a href="/publicaciones/?categoria=Libros">Libros</a>
+              <a href="/publicaciones/?categoria=Revistas">Revistas</a>
+              <a href="/publicaciones/?categoria=Enlaces">Enlaces</a>
+              <a href="/publicaciones/?categoria=Seminarios">Seminarios</a>
+              <a href="/publicaciones/?categoria=Formaci%C3%B3n">Formación</a>
+            </div>
+          </div>
+          <a href="/publicaciones/?categoria=Seminarios">Seminarios</a>
+          <a href="/publicaciones/?categoria=Formaci%C3%B3n">Formación</a>
+          <a href="/equipo/">Equipo</a>
+          <a id="adminNavLink" href="/admin/">Admin</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagehead">
+    <div class="container">
+      <div class="inner">
+        <div class="breadcrumb">
+          <a href="/">Inicio</a> <span>›</span> <span>Admin</span>
+        </div>
+        <div class="h1">Administración</div>
+      </div>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container">
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+      <div class="grid">
+        <aside class="sidebar">
+          <div class="head">Secciones</div>
+          <div class="menu">
+            <a class="active" href="#" data-section="posts">Publicar</a>
+            <a href="#" data-section="settings">Portada / Logo / Imágenes</a>
+            <a href="#" data-section="dimensions">Dimensiones / Descripción</a>
+            <a href="#" data-section="editors">Editores</a>
+            <a href="#" data-section="team">Equipo</a>
+            <a href="#" data-section="footer">Footer</a>
+          </div>
+        </aside>
+
+        <section class="panel">
+          <div class="pad">
+            <div id="state" class="notice">Inicia sesión para administrar.</div>
+            <div id="loggedUser" class="muted small" style="margin-top:6px;display:none;"></div>
+
+            <!-- LOGIN -->
+            <div id="loginBox" style="margin-top:12px;">
+              <h2>Login</h2>
+              <form class="form" id="loginForm">
+                <div>
+                  <label>Email</label>
+                  <input name="email" type="email" autocomplete="email" required />
+                </div>
+                <div>
+                  <label>Contraseña</label>
+                  <input name="password" type="password" autocomplete="current-password" required />
+                </div>
+                <button class="btn" type="submit">Entrar</button>
+              </form>
+            </div>
+
+            
+            <!-- EDITOR -->
+            <div id="editorBox" style="display:none;margin-top:18px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                <h2 style="margin:0;">Panel web</h2>
+                <button class="btn" id="logoutBtn" type="button">Cerrar sesión</button>
+              </div>
+
+              <div class="admin-section" data-section="footer" id="footer">
+                <h2>Footer</h2>
+                <p class="muted">Edita el bloque de contacto y los logos del pie.</p>
+
+                <form class="form" id="footerContactForm">
+                  <div>
+                    <label>Contacto (HTML permitido)</label>
+                    <textarea name="contact_html" id="footerContactField" data-rte></textarea>
+                  </div>
+                  <button class="btn" type="submit">Guardar contacto</button>
+                  <div id="footerContactResult" style="margin-top:10px;"></div>
+                </form>
+
+                <h3 style="margin-top:20px;">Logos del footer</h3>
+                <form class="form" id="footerLogoForm" enctype="multipart/form-data">
+                  <div class="row2">
+                    <div>
+                      <label>Orden (número)</label>
+                      <input name="orden" type="number" />
+                    </div>
+                    <div>
+                      <label>Link (opcional)</label>
+                      <input name="link" type="url" placeholder="https://..." />
+                    </div>
+                  </div>
+                  <div>
+                    <label>Logo (png/jpg/svg/webp)</label>
+                    <input name="logo" type="file" accept="image/*" />
+                  </div>
+                  <button class="btn" type="submit">Añadir logo</button>
+                  <div id="footerLogoResult" style="margin-top:10px;"></div>
+                </form>
+
+                <div id="footerLogosList" class="notice" style="margin-top:14px;">Cargando…</div>
+              </div>
+              <hr />
+
+              <div class="admin-section active" data-section="posts">
+                <h3>Editar artículo existente</h3>
+                  <div class="row2">
+                  <div>
+                      <label>Selecciona un artículo</label>
+                      <select id="postSelect"></select>
+                  </div>
+                  <div style="display:flex;align-items:flex-end;gap:10px;">
+                      <button class="btn" id="loadPostBtn" type="button">Cargar</button>
+                      <button class="btn" id="updatePostBtn" type="button">Guardar cambios</button>
+                  </div>
+                  </div>
+              <p class="small">Tip: “Publicar” crea uno nuevo. “Guardar cambios” actualiza el seleccionado.</p>
+
+              <h3 style="margin-top:16px;">Artículos existentes</h3>
+              <div id="postList" class="notice" style="margin-top:10px;">Cargando…</div>
+              <hr />
+
+                <!-- POSTS -->
+                <h2>Publicar artículo</h2>
+                <form class="form" id="postForm">
+                  <div class="row2">
+                    <div>
+                      <label>Título</label>
+                      <input name="title" required />
+                    </div>
+                    <div>
+                      <label>Slug (opcional)</label>
+                      <input name="slug" placeholder="se-genera-si-lo-dejas-vacio" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label>Resumen</label>
+                    <input name="summary" />
+                  </div>
+
+                  <div>
+                    <label>Contenido</label>
+                    <textarea name="content" data-rte placeholder="<p>Texto...</p>"></textarea>
+                  </div>
+
+                  <div class="row2">
+                    <div>
+                      <label>Imagen de portada</label>
+                      <input name="cover" type="file" accept="image/*" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label>Etiquetas (elige una o varias)</label>
+                    <div class="tag-checkboxes">
+                      <label><input type="checkbox" name="tags" value="Noticias e Informes" /> Noticias e Informes</label>
+                      <label><input type="checkbox" name="tags" value="Artículos" /> Artículos</label>
+                      <label><input type="checkbox" name="tags" value="Libros" /> Libros</label>
+                      <label><input type="checkbox" name="tags" value="Revistas" /> Revistas</label>
+                      <label><input type="checkbox" name="tags" value="Enlaces" /> Enlaces</label>
+                      <label><input type="checkbox" name="tags" value="Seminarios" /> Seminarios</label>
+                      <label><input type="checkbox" name="tags" value="Formación" /> Formación</label>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <input id="published" name="published" type="checkbox" checked />
+                    <label for="published" style="margin:0;">Publicar inmediatamente</label>
+                  </div>
+
+                  <button class="btn" id="postSubmitBtn" type="submit">Publicar</button>
+                  <div id="postResult" style="margin-top:12px;"></div>
+                </form>
+              </div>
+
+              <div class="admin-section" data-section="settings" id="settings">
+                <h2>Portada / Logo / Imágenes</h2>
+                <p class="muted">Esto edita el logo, el título y las imágenes de portada/galería.</p>
+
+                <form class="form" id="settingsForm">
+                  <div class="row2">
+                    <div>
+                      <label>Nombre del sitio</label>
+                      <input name="site_name" />
+                    </div>
+                    <div>
+                      <label>Logo superior (cabecera)</label>
+                      <input name="logo" type="file" accept="image/*" />
+                      <p class="small muted">Se muestra en la parte superior de la web.</p>
+                    </div>
+                  </div>
+
+                  <div class="row2">
+                    <div>
+                      <label>Título hero</label>
+                      <input name="hero_title" />
+                    </div>
+                    <div>
+                      <label>Subtítulo hero</label>
+                      <input name="hero_subtitle" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label>Imágenes campus/lab/equipo (hasta 20)</label>
+                    <input name="hero_images" type="file" accept="image/*" multiple />
+                  </div>
+
+                  <button class="btn" type="submit">Guardar portada</button>
+                  <div id="settingsResult" style="margin-top:12px;"></div>
+                </form>
+
+                <div id="settingsUploads" style="margin-top:14px;"></div>
+              </div>
+
+              <div class="admin-section" data-section="dimensions" id="dimensions">
+                <h2>Desplegables</h2>
+                <p class="muted">Edita la descripción general y las entradas (título, subtítulo y texto).</p>
+
+                <form class="form" id="descriptionForm">
+                  <div>
+                    <label>Descripción del proyecto (HTML permitido)</label>
+                    <textarea name="project_description" data-rte rows="4" placeholder="<p>Texto del proyecto...</p>"></textarea>
+                  </div>
+                  <button class="btn" type="submit">Guardar descripción</button>
+                  <div id="descriptionResult" style="margin-top:10px;"></div>
+                </form>
+
+                <hr />
+
+                <h3>Editar desplegable</h3>
+                <div class="row2" style="align-items:flex-end;">
+                  <div>
+                    <label>Selecciona un desplegable</label>
+                    <select id="dimensionSelect"></select>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <button class="btn" id="loadDimensionBtn" type="button">Cargar</button>
+                    <button class="btn" id="newDimensionBtn" type="button">Nueva</button>
+                  </div>
+                </div>
+                <p class="small">Tip: Usa "Nueva" para limpiar el formulario y crear otra dimensión.</p>
+
+                <form class="form" id="dimensionForm">
+                  <div class="row2">
+                    <div>
+                      <label>Título</label>
+                      <input name="titulo" required />
+                    </div>
+                    <div>
+                      <label>Subtítulo</label>
+                      <input name="pregunta" placeholder="Subtítulo del desplegable" />
+                    </div>
+                  </div>
+                  <div>
+                    <label>Texto</label>
+                    <textarea name="texto" data-rte rows="4" placeholder="Detalle de la dimensión"></textarea>
+                  </div>
+                  <button class="btn" type="submit">Guardar desplegable</button>
+                  <div id="dimensionResult" style="margin-top:10px;"></div>
+                </form>
+
+                <div id="dimensionList" style="margin-top:14px;"></div>
+              </div>
+
+              <div class="admin-section" data-section="editors" id="editors">
+                <h2>Editores (acceso al panel)</h2>
+                <p class="muted">Añade o elimina cuentas que pueden entrar al panel.</p>
+
+                <form class="form" id="editorForm">
+                  <div class="row2">
+                    <div>
+                      <label>Email</label>
+                      <input name="email" type="email" required />
+                    </div>
+                    <div>
+                      <label>Contraseña</label>
+                      <input name="password" type="password" required />
+                    </div>
+                  </div>
+                  <div>
+                    <label>Confirmar contraseña</label>
+                    <input name="passwordConfirm" type="password" required />
+                  </div>
+                  <div>
+                    <label>Nombre de usuario (opcional)</label>
+                    <input name="username" placeholder="Si lo dejas vacío, usará el email." />
+                  </div>
+                  <button class="btn" type="submit">Guardar editor</button>
+                  <div id="editorResult" style="margin-top:10px;"></div>
+                </form>
+
+                <div id="editorList" style="margin-top:14px;"></div>
+
+                <hr />
+
+                <h3>Cambiar mi contraseña</h3>
+                <form class="form" id="passwordForm">
+                  <div class="row2">
+                    <div>
+                      <label>Contraseña actual</label>
+                      <input name="oldPassword" type="password" required />
+                    </div>
+                    <div>
+                      <label>Nueva contraseña</label>
+                      <input name="newPassword" type="password" required />
+                    </div>
+                  </div>
+                  <div>
+                    <label>Confirmar nueva contraseña</label>
+                    <input name="newPasswordConfirm" type="password" required />
+                  </div>
+                  <button class="btn" type="submit">Actualizar contraseña</button>
+                  <div id="passwordResult" style="margin-top:10px;"></div>
+                </form>
+              </div>
+
+              <div class="admin-section" data-section="team" id="team">
+                <h3>Editar miembro existente</h3>
+                  <div class="row2">
+                  <div>
+                      <label>Selecciona un miembro</label>
+                      <select id="memberSelect"></select>
+                  </div>
+                  <div style="display:flex;align-items:flex-end;gap:10px;">
+                      <button class="btn" id="loadMemberBtn" type="button">Cargar</button>
+                      <button class="btn" id="updateMemberBtn" type="button">Guardar cambios</button>
+                  </div>
+              </div>
+
+                <!-- TEAM -->
+                <h2>Equipo</h2>
+                <p class="muted">Añade miembros con foto, cargo y descripción.</p>
+
+<form class="form" id="teamForm">
+                <div class="row2">
+                  <div>
+                    <label>Nombre</label>
+                    <input name="name" required />
+                  </div>
+                  <div>
+                    <label>Cargo</label>
+                    <input name="role" required />
+                  </div>
+                </div>
+
+                <div>
+                  <label>Referencia a editor autorizado (opcional)</label>
+                  <select name="editorRef" id="editorRefSelect"></select>
+                </div>
+
+                <div>
+                  <label>Foto</label>
+                  <input name="photo" type="file" accept="image/*" />
+                  <div id="photoPreview" class="photo-preview muted small">Sin foto actual.</div>
+                </div>
+
+                <div>
+                  <label>Descripción</label>
+                  <textarea name="bio" data-rte></textarea>
+                </div>
+
+                <div>
+                  <label>Descripción corta (para hover)</label>
+                  <textarea name="descripcion_corta" data-rte></textarea>
+                </div>
+
+                <div>
+                  <label>Links del miembro</label>
+                  <div id="linkRows" class="links-list"></div>
+                  <button class="btn" type="button" id="addLinkRowBtn">Añadir link</button>
+                </div>
+
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <input id="active" name="active" type="checkbox" checked />
+                    <label for="active" style="margin:0;">Visible</label>
+                  </div>
+
+                  <button class="btn" id="teamSubmitBtn" type="submit">Añadir miembro</button>
+                  <div id="teamResult" style="margin-top:12px;"></div>
+                </form>
+
+                <h3 style="margin-top:22px;">Miembros actuales</h3>
+                <div id="teamList" class="notice">Cargando…</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="/assets/config.js"></script>
+  <script src="/assets/admin.js"></script>
+</body>
+</html>
