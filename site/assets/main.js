@@ -160,7 +160,7 @@ function renderFooter(settings, logos) {
 
   if (contactBox) {
     const html = settings?.contact_html ?? `<p class="muted">Añade la info de contacto desde Admin.</p>`;
-    contactBox.innerHTML = html;
+    contactBox.innerHTML = highlightFooterProject(html);
   }
 
   if (logosBox) {
@@ -177,6 +177,12 @@ function renderFooter(settings, logos) {
       logosBox.insertAdjacentHTML("beforeend", `${open}<img src="${src}" alt="Logo">${close}`);
     }
   }
+}
+
+function highlightFooterProject(html) {
+  if (!html || html.includes("footer-project-title")) return html;
+  const re = /Influencia de las nuevas formas de persuasión encubierta en Internet sobre la(?:\s|<br\s*\/?>)+conducta de los jóvenes e intervención educativa \(PERENED\)\./gi;
+  return html.replace(re, match => `<span class="footer-project-title">${match}</span>`);
 }
 
 function renderPosts(items) {
