@@ -363,21 +363,60 @@ a:hover{text-decoration:underline}
   max-width: 820px;
 }
 .hero .overlay .box .kicker{
-  display:inline-block;
-  background: var(--brand);
-  color: var(--text);
-  padding:6px 10px;
-  border-radius:999px;
+  display:block;
+  background:none;
+  color:var(--brand);
+  padding:0;
+  border-radius:0;
+  margin-bottom:6px;
   font-weight:900;
-  font-size:14px;
+  font-size:clamp(28px, 4vw, 48px);
   text-transform:uppercase;
-  letter-spacing:0.6px;
+  letter-spacing:1.6px;
+  line-height:1.05;
+}
+.hero .overlay .pill{
+  display:block;
+  background:none;
+  color:var(--brand);
+  padding:0;
+  border-radius:0;
+  margin-bottom:6px;
+  font-weight:900;
+  font-size:clamp(28px, 4vw, 48px);
+  text-transform:uppercase;
+  letter-spacing:1.6px;
+  line-height:1.05;
 }
 .hero .overlay h1{
   margin:10px 0 6px;
   font-size:28px;
+  letter-spacing:0.02em;
+}
+.hero .overlay h1.hero-title-animate{
+  animation: hero-title-in 1800ms ease-out 240ms both;
+  will-change: transform, opacity, letter-spacing, filter;
 }
 .hero .overlay p{margin:0;color:#fff;opacity:.95}
+
+@keyframes hero-title-in{
+  from{
+    opacity:0;
+    transform:translateY(6px);
+    letter-spacing:0.22em;
+    filter:blur(4px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+    letter-spacing:0.02em;
+    filter:blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .hero .overlay h1.hero-title-animate{animation:none;}
+}
 
 .gallery{
   display:grid;

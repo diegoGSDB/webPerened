@@ -3,7 +3,7 @@ window.APP_CONFIG = {
   POSTS_COLLECTION: "posts",
   TEAM_COLLECTION: "team_members",
   SETTINGS_COLLECTION: "site_settings",
-  DIMENSIONS_COLLECTION: "dimensiones_proyecto",
+  DIMENSIONS_COLLECTION: "Dimensiones_proyecto",
   EDITORS_COLLECTION: "editors",
   LINKS_COLLECTION: "links_equipo",
   LOGOS_COLLECTION: "logos_footer",

@@ -132,9 +132,12 @@ function renderSettings(s) {
   }
 
   // hero textos
-  if (s.hero_title) {
-    const heroTitle = document.getElementById("heroTitle");
-    if (heroTitle) heroTitle.textContent = s.hero_title;
+  const heroTitle = document.getElementById("heroTitle");
+  if (heroTitle) {
+    if (s.hero_title) heroTitle.textContent = s.hero_title;
+    heroTitle.classList.remove("hero-title-animate");
+    void heroTitle.offsetWidth;
+    heroTitle.classList.add("hero-title-animate");
   }
   if (s.hero_subtitle) {
     const heroSubtitle = document.getElementById("heroSubtitle");
@@ -330,7 +333,7 @@ function renderDimensions(items) {
   msg.innerHTML = "";
 
   if (!items.length) {
-    msg.innerHTML = `<div class="notice">Aún no hay dimensiones cargadas.</div>`;
+    msg.innerHTML = `<div class="notice">Aún no hay Dimensiones cargadas.</div>`;
     return;
   }
 

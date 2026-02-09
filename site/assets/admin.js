@@ -901,7 +901,7 @@ async function loadDimensionsDropdown() {
     const items = data.items || [];
 
     if (!items.length) {
-      select.innerHTML = `<option value="">(No hay dimensiones)</option>`;
+      select.innerHTML = `<option value="">(No hay Dimensiones)</option>`;
       return;
     }
 
@@ -922,7 +922,7 @@ async function refreshDimensionsList() {
     const data = await pbList(DIMENSIONS_COLLECTION, 100, "-created");
     const items = data.items || [];
     if (!items.length) {
-      box.innerHTML = `<div class="notice">Aún no hay dimensiones creadas.</div>`;
+      box.innerHTML = `<div class="notice">Aún no hay Dimensiones creadas.</div>`;
       return;
     }
     box.innerHTML = `
