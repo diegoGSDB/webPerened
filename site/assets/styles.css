@@ -231,19 +231,47 @@ a:hover{text-decoration:underline}
 
 @media (max-width: 980px){
   .topbar{padding-bottom:28px;}
-  .topbar-rail{gap:20px;padding-right:18px;}
+  .topbar-rail{
+    gap:16px;
+    padding-right:18px;
+    justify-content:space-between;
+  }
+  .nav{display:none;}
   .brand-badge{width:92px;height:120px;transform:translateY(-28px);}
   .brand-badge::before{height:140px;}
-  .brand-caption{bottom:-22px;}
+  .brand-caption{
+    position:static;
+    margin-top:-6px;
+  }
   .nav{gap:20px;font-size:14px;}
 }
 @media (max-width: 640px){
-  .topbar{padding-bottom:20px;}
-  .topbar-actions{top:4px;right:4px;}
-  .topbar-rail{flex-wrap:wrap;gap:16px;padding:0 16px 0 14px;}
-  .brand-badge{width:84px;height:106px;transform:translateY(-20px);}
+  .topbar{padding-bottom:18px;}
+  .topbar::before{top:58px;height:34px;}
+  .topbar-actions{top:8px;right:8px;}
+  .topbar-rail{
+    flex-wrap:nowrap;
+    gap:12px;
+    padding:6px 12px 0 12px;
+  }
+  .brand{
+    align-items:center;
+    margin-top:10px;
+  }
+  .brand-badge{
+    width:auto;
+    height:auto;
+    transform:translateY(6px);
+  }
+  .brand-badge img{height:96px;}
+  .brand-badge .brand-fallback{font-size:32px;}
   .brand-badge::before{height:124px;}
-  .brand-caption{bottom:-18px;}
+  .brand-caption{
+    position:static;
+    margin-top:-8px;
+    font-size:13px;
+  }
+  .brand-caption .brand-subtitle{display:none;}
   .nav{gap:14px;font-size:13px;}
 }
 
