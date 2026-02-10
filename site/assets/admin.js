@@ -453,7 +453,7 @@ async function deleteHeroImage(filename) {
 }
 
 async function refreshTeamList() {
-  const data = await pbList(TEAM_COLLECTION, 100, "name");
+  const data = await pbList(TEAM_COLLECTION, 100, "order,name");
   const items = data.items || [];
   const box = document.getElementById("teamList");
 
@@ -474,7 +474,7 @@ async function refreshTeamList() {
         <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #e6e6e6">
           <div>
             <b>${esc(m.name)}</b> — <span class="small">${esc(m.role)}</span>
-            <div class="small">active=${esc(m.active)}</div>
+            <div class="small">order=${esc(m.order ?? "")} · active=${esc(m.active)}</div>
           </div>
           <button class="btn" data-del="${esc(m.id)}" type="button">Eliminar</button>
         </div>
@@ -724,7 +724,7 @@ async function loadMembersDropdown() {
   select.innerHTML = `<option value="">Cargando…</option>`;
 
   try {
-    const url = `${PB_BASE}/api/collections/${TEAM_COLLECTION}/records?perPage=200&sort=name`;
+    const url = `${PB_BASE}/api/collections/${TEAM_COLLECTION}/records?perPage=200&sort=${encodeURIComponent("order,name")}`;
     const res = await fetch(url, { headers: token() ? { "Authorization": `Bearer ${token()}` } : {} });
     if (!res.ok) throw new Error(`List error (${res.status})`);
     const data = await res.json();
@@ -735,18 +735,10 @@ async function loadMembersDropdown() {
       return;
     }
 
-    // Mostrar primero los no visibles (active = false), luego alfabético
-    items.sort((a, b) => {
-      const av = a.active ? 1 : 0;
-      const bv = b.active ? 1 : 0;
-      if (av !== bv) return av - bv; // inactivos primero
-      return (a.name || "").localeCompare(b.name || "");
-    });
-
     select.innerHTML = `<option value="">Selecciona un miembro…</option>` + items
       .map(m => {
         const visible = !!m.active;
-        const label = `${visible ? "Visible" : "No visible"} — ${m.name || "(sin nombre)"}`;
+        const label = `${visible ? "Visible" : "No visible"} — ${m.name || "(sin nombre)"}${m.order != null ? ` (orden ${m.order})` : ""}`;
         return `<option value="${m.id}">${esc(label)}</option>`;
       })
       .join("");
@@ -781,6 +773,7 @@ async function loadMemberIntoForm(id) {
     CURRENT_MEMBER_ID = m.id;
     form.name.value = m.name || "";
     form.role.value = m.role || "";
+    if (form.order) form.order.value = m.order ?? "";
     form.bio.value = m.bio || "";
     setRteContent(form.bio, m.bio || "");
     if (form.descripcion_corta) {
@@ -823,6 +816,8 @@ async function updateMember(id) {
   const payload = new FormData();
   payload.append("name", String(fd.get("name") || ""));
   payload.append("role", String(fd.get("role") || ""));
+  const orderValue = String(fd.get("order") || "").trim();
+  if (orderValue !== "") payload.append("order", orderValue);
   payload.append("bio", String(fd.get("bio") || ""));
   payload.append("descripcion_corta", String(fd.get("descripcion_corta") || ""));
   payload.append("active", String(!!fd.get("active")));
@@ -882,7 +877,7 @@ async function loadEditorsDropdownForTeam() {
 
 async function nextTeamOrder() {
   try {
-    const data = await pbList(TEAM_COLLECTION, 1);
+    const data = await pbList(TEAM_COLLECTION, 1, "-order");
     const top = data.items?.[0];
     return typeof top?.order === "number" ? top.order : Number(top?.order) || 0;
   } catch {
@@ -1280,10 +1275,12 @@ async function changeMyPassword(e) {
 
   const fd = new FormData(e.target);
   const orderValue = (await nextTeamOrder()) + 1;
+  const orderInput = String(fd.get("order") || "").trim();
 
   const payload = new FormData();
   payload.append("name", String(fd.get("name") || ""));
   payload.append("role", String(fd.get("role") || ""));
+  payload.append("order", orderInput !== "" ? orderInput : String(orderValue));
   payload.append("bio", String(fd.get("bio") || ""));
    payload.append("descripcion_corta", String(fd.get("descripcion_corta") || ""));
   payload.append("active", String(!!fd.get("active")));

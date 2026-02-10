@@ -59,7 +59,7 @@ async function fetchLinksByMember(memberId) {
 }
 
 async function fetchTeam() {
-  const url = `${PB_BASE}/api/collections/${TEAM_COLLECTION}/records?perPage=50&sort=name`;
+  const url = `${PB_BASE}/api/collections/${TEAM_COLLECTION}/records?perPage=50&sort=${encodeURIComponent("order,name")}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Team error (${res.status})`);
   return res.json();
@@ -211,8 +211,6 @@ function renderPosts(items) {
     const tagsHtml = tags.length
       ? `<div class="taglist">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>`
       : `<div class="muted small">Sin categoría</div>`;
-    const slugRaw = p.slug || "(sin-slug)";
-    const slug = esc(String(slugRaw).replace(/-/g, " "));
     const dateIso = p.published_at || p.created;
     const author = p.expand?.autor?.name || p.expand?.autor?.role || p.expand?.autor?.id || "Sin autor";
     posts.insertAdjacentHTML("beforeend", `
@@ -222,7 +220,6 @@ function renderPosts(items) {
         </div>
         <div class="publication-body">
           <h3 class="publication-title">${esc(p.title || "Sin título")}</h3>
-          <div class="publication-slug">${slug}</div>
           <div class="publication-meta">${esc(fmtDate(dateIso))}</div>
           <div class="publication-meta">Autor: ${esc(author)}</div>
           ${tagsHtml}
@@ -265,6 +262,15 @@ function renderTeam(items) {
     teamMsg.innerHTML = `<div class="notice">Aún no hay miembros añadidos.</div>`;
     return;
   }
+
+  items = items.slice().sort((a, b) => {
+    const ao = Number(a.order);
+    const bo = Number(b.order);
+    if (!Number.isNaN(ao) && !Number.isNaN(bo) && ao !== bo) return ao - bo;
+    if (!Number.isNaN(ao) && Number.isNaN(bo)) return -1;
+    if (Number.isNaN(ao) && !Number.isNaN(bo)) return 1;
+    return (a.name || "").localeCompare(b.name || "");
+  });
 
   for (const m of items) {
     const imgUrl = m.photo
