@@ -37,7 +37,7 @@ a:hover{text-decoration:underline}
   position:absolute;
   left:0;right:0;
   top:65px;
-  height:38px;
+  height:42px;
   background:#000;
   border-bottom:4px solid var(--brand);
   z-index:1;
@@ -46,7 +46,7 @@ a:hover{text-decoration:underline}
 .topbar-actions{
   position:absolute;
   right:14px;
-  top:50%;
+  top:65px;
   transform:translateY(-50%);
   display:flex;
   gap:10px;
@@ -57,12 +57,14 @@ a:hover{text-decoration:underline}
   background:transparent;
   border:none;
   color:var(--brand);
-  width:34px;
-  height:34px;
-  display:grid;
-  place-items:center;
+  width:36px;
+  height:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   cursor:pointer;
   padding:4px;
+  line-height:1;
 }
 .icon-btn svg{
   width:22px;
@@ -80,7 +82,7 @@ a:hover{text-decoration:underline}
   background:currentColor;
   border-radius:2px;
 }
-.burger-btn span + span{margin-top:4px;}
+.burger-btn span + span{margin-top:0;}
 
 .topbar-rail{
   background:transparent;
@@ -89,7 +91,7 @@ a:hover{text-decoration:underline}
   align-items:center;
   gap:28px;
   padding:0px 14px 6px 12px;
-  min-height:60px;
+  min-height:64px;
   position:relative;
   overflow:visible;
   z-index:2;
@@ -247,8 +249,8 @@ a:hover{text-decoration:underline}
 }
 @media (max-width: 640px){
   .topbar{padding-bottom:18px;}
-  .topbar::before{top:58px;height:34px;}
-  .topbar-actions{top:8px;right:8px;}
+  .topbar::before{top:58px;height:38px;}
+  .topbar-actions{top:70px;right:8px;}
   .topbar-rail{
     flex-wrap:nowrap;
     gap:12px;
@@ -347,6 +349,16 @@ a:hover{text-decoration:underline}
 .panel .pad{padding:18px}
 .panel h2{margin:0 0 10px;font-size:20px}
 .panel h3{margin:22px 0 10px;font-size:16px}
+.h1,
+.panel h2,
+.panel h3,
+.post-card .post-title,
+.publication-title,
+.person .name,
+.member-profile .member-name{
+  font-family:"Futura LT Light","Futura LT","Futura","Helvetica Neue",Arial,sans-serif;
+  font-weight:400;
+}
 .panel p{margin:0 0 12px;color:var(--text);text-align:justify}
 .content{
   text-align:justify;
@@ -851,12 +863,14 @@ a:hover{text-decoration:underline}
   color:#000;
 }
 .footer .footer-content{
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-  align-items:flex-start;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(240px,320px);
+  column-gap:24px;
+  row-gap:18px;
+  align-items:start;
 }
 .footer-contact{
+  grid-column:1;
   width:100%;
   font-size:14px;
   line-height:1.6;
@@ -866,17 +880,43 @@ a:hover{text-decoration:underline}
   font-weight:800;
 }
 .footer-logos{
+  grid-column:1;
   width:100%;
   display:flex;
   flex-wrap:wrap;
-  gap:18px 100px;
+  gap:18px 52px;
   align-items:center;
+}
+.footer-funding{
+  grid-column:2;
+  grid-row:1 / span 2;
+  justify-self:end;
+  width:100%;
+  max-width:320px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.footer-funding img{
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  display:block;
+}
+.footer-funding p{
+  margin:0;
+  font-size:13px;
+  line-height:1.45;
+  color:#111;
 }
 .footer-logos a,
 .footer-logos span{
   width:auto;
   display:inline-flex;
   align-items:center;
+  justify-content:center;
+  max-width:200px;
+  min-height:52px;
 }
 .footer-logos a:not(:first-child),
 .footer-logos span:not(:first-child){
@@ -895,6 +935,7 @@ a:hover{text-decoration:underline}
   transform:translateY(-50%);
 }
 .footer-copy{
+  grid-column:1 / -1;
   width:100%;
   margin-top:6px;
   background:#2b2b2b;
@@ -910,8 +951,11 @@ a:hover{text-decoration:underline}
   width:100vw;
 }
 .footer-logos img{
-  max-height:46px;
   width:auto;
+  height:auto;
+  max-width:100%;
+  max-height:52px;
+  object-fit:contain;
   display:block;
   background:transparent;
   padding:0;
@@ -920,6 +964,15 @@ a:hover{text-decoration:underline}
 }
 .footer a{color:var(--brand);}
 .footer a:hover{text-decoration:underline;}
+@media (max-width: 900px){
+  .footer .footer-content{grid-template-columns:1fr;}
+  .footer-funding{
+    grid-column:1;
+    grid-row:auto;
+    justify-self:start;
+    max-width:300px;
+  }
+}
 
 .project-title{
   text-transform:uppercase;
@@ -1042,8 +1095,11 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0}
 
 /* Burger / off-canvas menu */
 .burger-btn{
-  display:inline-grid;
-  place-items:center;
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
   padding:4px;
   border:none;
   background:transparent;

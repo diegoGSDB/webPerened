@@ -9,6 +9,9 @@ const {
   PER_PAGE
 } = window.APP_CONFIG;
 const TOKEN_KEY = "pb_editor_token";
+const FOOTER_EMAIL = "perened@uva.es";
+const FOOTER_FUNDING_TEXT = "Proyecto de I+D+i PID2024-160645OB-I00 financiado por MICIU/AEI/10.13039/501100011033 y por FEDER, UE.";
+const FOOTER_FUNDING_IMAGE = "/imgs/MICIU+Cofinanciado+AEI.jpg";
 const ALLOWED_TAGS = ["Noticias e Informes", "Artículos", "Libros", "Revistas", "Enlaces", "Seminarios", "Formación"];
 
 function esc(s) {
@@ -24,6 +27,55 @@ const STRIP_EL = document.createElement("div");
 function stripHtml(html) {
   STRIP_EL.innerHTML = String(html ?? "");
   return STRIP_EL.textContent || "";
+}
+
+function forceLinksInNewTab(root) {
+  if (!root) return;
+  root.querySelectorAll("a[href]").forEach(a => {
+    a.setAttribute("target", "_blank");
+    const rel = new Set(String(a.getAttribute("rel") || "").split(/\s+/).filter(Boolean));
+    rel.add("noopener");
+    rel.add("noreferrer");
+    a.setAttribute("rel", Array.from(rel).join(" "));
+  });
+}
+
+function normalizeFooterContactHtml(html) {
+  const source = String(html ?? "");
+  let out = source
+    .replace(/mailto:[^"'<>\s]+/gi, `mailto:${FOOTER_EMAIL}`)
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, FOOTER_EMAIL);
+  if (!new RegExp(FOOTER_EMAIL.replace(".", "\\."), "i").test(out)) {
+    out = `${out}<p>Email: <a href="mailto:${FOOTER_EMAIL}">${FOOTER_EMAIL}</a></p>`;
+  }
+  return out;
+}
+
+function renderFooterFunding() {
+  const footerContent = document.querySelector(".footer .footer-content");
+  if (!footerContent) return;
+
+  let fundingBox = footerContent.querySelector(".footer-funding");
+  if (!fundingBox) {
+    fundingBox = document.createElement("div");
+    fundingBox.className = "footer-funding";
+    const copy = footerContent.querySelector(".footer-copy");
+    if (copy) {
+      footerContent.insertBefore(fundingBox, copy);
+    } else {
+      footerContent.appendChild(fundingBox);
+    }
+  }
+
+  fundingBox.innerHTML = "";
+  const image = document.createElement("img");
+  image.src = FOOTER_FUNDING_IMAGE;
+  image.alt = "MICIU + Cofinanciado + AEI";
+  image.loading = "lazy";
+
+  const text = document.createElement("p");
+  text.textContent = FOOTER_FUNDING_TEXT;
+  fundingBox.append(image, text);
 }
 
 function fileUrl(collection, record, filename) {
@@ -149,11 +201,17 @@ function renderSettings(s) {
 
   // descripción proyecto (HTML)
   const projectDesc = document.getElementById("projectDesc");
-  if (projectDesc) projectDesc.innerHTML = s.project_description ?? `<p class="muted">Añade la descripción del proyecto desde Admin.</p>`;
+  if (projectDesc) {
+    projectDesc.innerHTML = s.project_description ?? `<p class="muted">Añade la descripción del proyecto desde Admin.</p>`;
+    forceLinksInNewTab(projectDesc);
+  }
 
   // contacto (HTML)
   const contact = document.getElementById("contact");
-  if (contact) contact.innerHTML = s.contact_html ?? `<p class="muted">Añade la info de contacto desde Admin.</p>`;
+  if (contact) {
+    contact.innerHTML = s.contact_html ?? `<p class="muted">Añade la info de contacto desde Admin.</p>`;
+    forceLinksInNewTab(contact);
+  }
 }
 
 function renderFooter(settings, logos) {
@@ -162,24 +220,29 @@ function renderFooter(settings, logos) {
   if (!contactBox && !logosBox) return;
 
   if (contactBox) {
-    const html = settings?.contact_html ?? `<p class="muted">Añade la info de contacto desde Admin.</p>`;
+    const html = normalizeFooterContactHtml(
+      settings?.contact_html ?? `<p>Email: <a href="mailto:${FOOTER_EMAIL}">${FOOTER_EMAIL}</a></p>`
+    );
     contactBox.innerHTML = highlightFooterProject(html);
+    forceLinksInNewTab(contactBox);
   }
 
   if (logosBox) {
     logosBox.innerHTML = "";
     if (!logos?.length) {
       logosBox.innerHTML = `<div class="muted small">Sin logos.</div>`;
-      return;
-    }
-    for (const l of logos) {
-      if (!l.logo) continue;
-      const src = fileUrl(LOGOS_COLLECTION, l, l.logo);
-      const open = l.link ? `<a href="${esc(l.link)}" target="_blank" rel="noopener">` : `<span>`;
-      const close = l.link ? `</a>` : `</span>`;
-      logosBox.insertAdjacentHTML("beforeend", `${open}<img src="${src}" alt="Logo">${close}`);
+    } else {
+      for (const l of logos) {
+        if (!l.logo) continue;
+        const src = fileUrl(LOGOS_COLLECTION, l, l.logo);
+        const open = l.link ? `<a href="${esc(l.link)}" target="_blank" rel="noopener">` : `<span>`;
+        const close = l.link ? `</a>` : `</span>`;
+        logosBox.insertAdjacentHTML("beforeend", `${open}<img src="${src}" alt="Logo">${close}`);
+      }
     }
   }
+
+  renderFooterFunding();
 }
 
 function highlightFooterProject(html) {
@@ -224,7 +287,7 @@ function renderPosts(items) {
           <div class="publication-meta">Autor: ${esc(author)}</div>
           ${tagsHtml}
           <div class="publication-actions">
-            <a class="btn" href="/post/?id=${encodeURIComponent(p.id)}">Ver más</a>
+            <a class="btn" href="/post/?id=${encodeURIComponent(p.id)}" target="_blank" rel="noopener noreferrer">Ver más</a>
           </div>
         </div>
       </article>
@@ -371,6 +434,7 @@ function renderDimensions(items) {
       openCard = isOpen ? card : null;
     });
   });
+  forceLinksInNewTab(list);
 }
 
 function setupBurgerMenu() {

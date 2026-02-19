@@ -52,6 +52,17 @@ function setupBurgerMenu() {
   sidebar.querySelectorAll("a").forEach(a => a.addEventListener("click", close));
 }
 
+function forceLinksInNewTab(root) {
+  if (!root) return;
+  root.querySelectorAll("a[href]").forEach(a => {
+    a.setAttribute("target", "_blank");
+    const rel = new Set(String(a.getAttribute("rel") || "").split(/\s+/).filter(Boolean));
+    rel.add("noopener");
+    rel.add("noreferrer");
+    a.setAttribute("rel", Array.from(rel).join(" "));
+  });
+}
+
 async function init() {
   const id = getParam("id");
   const msg = document.getElementById("msg");
@@ -85,7 +96,9 @@ async function init() {
 
     document.getElementById("meta").textContent = fmtDate(p.published_at);
     // content aquí viene como HTML (rich text). Si lo guardas como markdown, habría que convertirlo.
-    document.getElementById("content").innerHTML = p.content ?? "";
+    const content = document.getElementById("content");
+    content.innerHTML = p.content ?? "";
+    forceLinksInNewTab(content);
 
     msg.innerHTML = "";
     body.style.display = "block";
