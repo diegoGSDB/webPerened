@@ -250,7 +250,7 @@ a:hover{text-decoration:underline}
 @media (max-width: 640px){
   .topbar{padding-bottom:18px;}
   .topbar::before{top:58px;height:38px;}
-  .topbar-actions{top:70px;right:8px;}
+  .topbar-actions{top:58px;right:8px;}
   .topbar-rail{
     flex-wrap:nowrap;
     gap:12px;
