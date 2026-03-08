@@ -20,6 +20,7 @@ let editorsCache = [];
 let currentEditorTeamId = null;
 let CURRENT_MEMBER_ID = null;
 let CURRENT_POST_ID = null;
+let CURRENT_POST_URL_FIELD = "url";
 const ADMIN_PAGE_SIZE = 10;
 let TEAM_PAGE = 1;
 let POSTS_PAGE = 1;
@@ -152,6 +153,36 @@ function slugify(str) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "")
     .slice(0, 80);
+}
+
+function normalizeExternalUrl(raw) {
+  const input = String(raw ?? "").trim();
+  if (!input) return "";
+  const withProtocol = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(input) ? input : `https://${input}`;
+  try {
+    const url = new URL(withProtocol, window.location.origin);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+    return url.href;
+  } catch {
+    return "";
+  }
+}
+
+function getPostUrlFieldName(post) {
+  const candidates = ["url", "link", "external_url", "article_url"];
+  for (const key of candidates) {
+    if (Object.prototype.hasOwnProperty.call(post || {}, key)) return key;
+  }
+  return "url";
+}
+
+function getPostUrlValue(post) {
+  const candidates = [post?.url, post?.link, post?.external_url, post?.article_url];
+  for (const value of candidates) {
+    const normalized = normalizeExternalUrl(value);
+    if (normalized) return normalized;
+  }
+  return "";
 }
 
 function token() { return localStorage.getItem(TOKEN_KEY); }
@@ -1194,6 +1225,7 @@ async function changeMyPassword(e) {
     payload.append("title", title);
     payload.append("slug", slug);
     payload.append("summary", String(fd.get("summary") || ""));
+    payload.append(CURRENT_POST_URL_FIELD, normalizeExternalUrl(fd.get("url")));
     payload.append("content", String(fd.get("content") || ""));
     payload.append("tags", tagValues.join(", "));
     payload.append("published", String(!!fd.get("published")));
@@ -1365,6 +1397,8 @@ async function loadPostsDropdown() {
       return;
     }
 
+    CURRENT_POST_URL_FIELD = getPostUrlFieldName(items[0]);
+
     // Orden visual: publicados primero, luego borradores
     items.sort((a, b) => {
       const av = a.published ? 1 : 0;
@@ -1486,6 +1520,8 @@ async function loadPostIntoForm(id) {
     form.title.value = p.title || "";
     form.slug.value = p.slug || "";
     form.summary.value = p.summary || "";
+    CURRENT_POST_URL_FIELD = getPostUrlFieldName(p);
+    if (form.url) form.url.value = getPostUrlValue(p);
     form.content.value = p.content || "";
     setRteContent(form.content, p.content || "");
     const tagsArray = normalizeTags(p.tags);
@@ -1566,6 +1602,7 @@ async function updatePost(id) {
   payload.append("title", title);
   payload.append("slug", slug);
   payload.append("summary", String(fd.get("summary") || ""));
+  payload.append(CURRENT_POST_URL_FIELD, normalizeExternalUrl(fd.get("url")));
   payload.append("content", String(fd.get("content") || ""));
   const tagValues = fd.getAll("tags").filter(t => ALLOWED_TAGS.includes(t));
   payload.append("tags", tagValues.join(", "));

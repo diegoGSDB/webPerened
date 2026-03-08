@@ -375,6 +375,9 @@ a:hover{text-decoration:underline}
   border-radius:14px;
   border:1px solid var(--border);
 }
+.newtab-linkable{cursor:pointer}
+.heroimg.newtab-linkable:hover{opacity:.92}
+.h1.newtab-linkable:hover{text-decoration:underline}
 @media (max-width: 680px){
   .heroimg{height:220px;}
 }
@@ -590,7 +593,13 @@ a:hover{text-decoration:underline}
   border-radius:12px;
   display:block;
 }
+.publication-media-link{display:block}
 .publication-title{margin:0 0 6px;font-size:20px}
+.publication-title-link{
+  color:inherit;
+  text-decoration:none;
+}
+.publication-title-link:hover{text-decoration:underline}
 .publication-slug{font-family:monospace;font-size:13px;color:#555;margin-bottom:6px;}
 .publication-meta{font-size:13px;color:#666;margin-bottom:8px;}
 .publication-actions{margin-top:10px;}

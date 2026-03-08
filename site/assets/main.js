@@ -88,6 +88,28 @@ function fmtDate(iso) {
   return d.toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" });
 }
 
+function normalizeExternalUrl(raw) {
+  const input = String(raw ?? "").trim();
+  if (!input) return "";
+  const withProtocol = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(input) ? input : `https://${input}`;
+  try {
+    const url = new URL(withProtocol, window.location.origin);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+    return url.href;
+  } catch {
+    return "";
+  }
+}
+
+function getPostExternalUrl(post) {
+  const candidates = [post?.url, post?.link, post?.external_url, post?.article_url];
+  for (const value of candidates) {
+    const normalized = normalizeExternalUrl(value);
+    if (normalized) return normalized;
+  }
+  return "";
+}
+
 async function fetchSettings() {
   const url = `${PB_BASE}/api/collections/${SETTINGS_COLLECTION}/records?perPage=1`;
   const res = await fetch(url);
@@ -270,6 +292,9 @@ function renderPosts(items) {
     const coverUrl = p.cover
       ? fileUrl(POSTS_COLLECTION, p, p.cover)
       : "https://picsum.photos/800/600?random=25";
+    const detailUrl = `/post/?id=${encodeURIComponent(p.id)}`;
+    const externalUrl = getPostExternalUrl(p);
+    const mediaUrl = externalUrl || detailUrl;
     const tags = normalizeTags(p.tags);
     const tagsHtml = tags.length
       ? `<div class="taglist">${tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>`
@@ -279,15 +304,19 @@ function renderPosts(items) {
     posts.insertAdjacentHTML("beforeend", `
       <article class="publication-card">
         <div class="publication-thumb">
-          <img src="${coverUrl}" alt="${esc(p.title || "")}">
+          <a class="publication-media-link" href="${esc(mediaUrl)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir ${esc(p.title || "artículo")}">
+            <img src="${coverUrl}" alt="${esc(p.title || "")}">
+          </a>
         </div>
         <div class="publication-body">
-          <h3 class="publication-title">${esc(p.title || "Sin título")}</h3>
+          <h3 class="publication-title">
+            <a class="publication-title-link" href="${esc(mediaUrl)}" target="_blank" rel="noopener noreferrer">${esc(p.title || "Sin título")}</a>
+          </h3>
           <div class="publication-meta">${esc(fmtDate(dateIso))}</div>
           <div class="publication-meta">Autor: ${esc(author)}</div>
           ${tagsHtml}
           <div class="publication-actions">
-            <a class="btn" href="/post/?id=${encodeURIComponent(p.id)}" target="_blank" rel="noopener noreferrer">Ver más</a>
+            <a class="btn" href="${detailUrl}" target="_blank" rel="noopener noreferrer">Ver más</a>
           </div>
         </div>
       </article>
